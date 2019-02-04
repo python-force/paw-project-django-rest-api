@@ -1,0 +1,9 @@
+<ul>
+{% for group in groups %}
+    {% if current_group == group.group %}
+    <li style="font-weight: bold;"><a href="{% url 'search' %}?group={{ group.group }}">{{ group.group }}</a></li>
+    {% else %}
+    <li><a href="{% url 'search' %}?group={{ group.group }}">{{ group.group }}</a></li>
+    {% endif %}
+{% endfor %}
+</ul>

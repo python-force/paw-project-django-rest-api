@@ -1,0 +1,8 @@
+.DS_Store
+venv
+.idea
+idea
+.coverage
+*.pyc
+htmlcov
+__pycache__

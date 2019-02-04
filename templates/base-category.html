@@ -1,0 +1,9 @@
+<ul>
+{% for category in all_categories %}
+    {% if current_category == category.category %}
+    <li style="font-weight: bold;"><a href="{% url 'search' %}?group={{ category.category }}">{{ category.category }}</a></li>
+    {% else %}
+    <li><a href="{% url 'search' %}?category={{ category.category }}">{{ category.category }}</a></li>
+    {% endif %}
+{% endfor %}
+</ul>

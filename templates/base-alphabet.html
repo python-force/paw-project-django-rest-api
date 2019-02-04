@@ -1,0 +1,7 @@
+{% for character in alphabet %}
+{% if current_letter == character %}
+<a href="{% url "search" %}?q={{ character }}" style="font-weight: bold; background: yellow;">{{ character|upper }}</a>
+{% else %}
+<a href="{% url "search" %}?q={{ character }}">{{ character|upper }}</a>
+{% endif %}
+{% endfor %}

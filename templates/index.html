@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+    <div class="row">
+        {% if minerals %}
+        {% for mineral in minerals %}
+        <div class="col-md-3">
+            <a href="{% url 'detail' mineral.pk %}">
+                <img src="https://via.placeholder.com/300x300.jpg?text={{ mineral.name }}" style="width: 100%; margin-bottom: 25px;">
+            </a>
+        </div>
+        {% if forloop.counter|divisibleby:4 %}
+    </div>
+    <div class="row" style="margin-top: 5px">
+        {% endif %}
+        {% endfor %}
+        {% else %}
+         <p>There is no mineral by that search criteria that you looking for.</p>
+        {% endif %}
+
+    </div>
+
+{% endblock %}
