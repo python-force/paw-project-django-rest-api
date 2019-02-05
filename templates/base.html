@@ -1,105 +1,44 @@
-{% load static core_tags %}
+{% load static %}
 {% load bootstrap3 %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Basic Page Needs -->
   <meta charset="utf-8">
-  <title>MineralsPedia</title>
+  <title>Pug or Ugh</title>
   <meta name="description" content="">
   <meta name="author" content="">
+  <!-- Mobile Specific Metas -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- FONTS -->
   <link href='https://fonts.googleapis.com/css?family=Work+Sans:400,500' rel='stylesheet' type='text/css'>
   <link href='https://fonts.googleapis.com/css?family=Cousine' rel='stylesheet' type='text/css'>
-    {% bootstrap_css %}
-    {% bootstrap_javascript %}
-  <link rel="stylesheet" href="{% static "css/custom.css" %}">
+  <!-- CSS -->
+  <link rel="stylesheet" href="static/css/global.css">
+  <link rel="stylesheet" href="static/css/custom.css">
+  <!-- JS -->
+  <script src="static/lib/jquery.min.js"></script>
+  <script src="static/lib/react-with-addons-0.14.7.min.js"></script>
+  <script src="static/lib/react-dom-0.14.7.min.js"></script>
 </head>
 <body>
-    <div class="navbar navbar-inverse navbar-static-top" role="navigation">
+  <div id="container"></div>
+  <script src="static/lib/token-auth.js"></script>
+  <script src="static/js/registration.js"></script>
+  <script src="static/js/login.js"></script>
+  <script src="static/js/checkboxGroup.js"></script>
+  <script src="static/js/preferences.js"></script>
+  <script src="static/js/dog.js"></script>
+  <script src="static/js/app.js"></script>
 
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" rel="home" href="/" title="Aahan Krish's Blog - Homepage">MineralsPedia</a>
-        </div>
-
-        <div class="collapse navbar-collapse navbar-ex1-collapse">
-
-            <div class="col-sm-3 col-md-3 pull-right">
-            <form class="navbar-form" role="search" action="{% url 'search' %}" method="GET">
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search" name="text" id="srch-term">
-                <div class="input-group-btn">
-                    <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
-                </div>
-            </div>
-            </form>
-            </div>
-
-        </div>
+  <div class="bounds">
+    <div class="grid-60 centered">
+        Hello
+      <footer class="text-centered">
+        Pug or Ugh app, &copy; 2016.
+      </footer>
     </div>
-
-    <div class="container">
-
-        <!--
-        <section id="searchtext">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="grid-100">
-                        <form action="{% url 'search' %}" method="GET">
-                            <ul>
-                                <li><input type="search" name="text"></li>
-                                <li><button type="button" class="secondary small button">Search</button></li>
-                            </ul>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </section>
-        -->
-
-        <section id="header">
-            <div class="row">
-                <div class="col-md-12">
-                    <a href="{% url 'index' %}">
-                        <h1 class="logo__name text-centered">MineralsPedia</h1>
-                    </a>
-                    <p class="logo__text text-centered">They're not rocks!</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="alphabet">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="grid-100">
-                        {% mineral_alphabet current_letter=mineral.term %}
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="content">
-            <div class="row">
-                <div class="col-md-3">
-                    <h5>by Group</h5>
-                    {% mineral_groups current_group=mineral.group %}
-                    <h5>by Category</h5>
-                    {% mineral_category current_category=mineral.category %}
-                </div>
-                <div class="col-md-9">
-                    {% block home %}{% endblock %}
-                    {% block content %}{% endblock %}
-                </div>
-            </div>
-        </section>
-    </div>
-    <section id="footer">
-        {% random_mineral %}
-    </section>
+  </div>
 </body>
 </html>
+
