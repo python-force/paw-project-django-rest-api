@@ -25,10 +25,7 @@ class RetrieveUpdateProfileView(RetrieveUpdateAPIView):
 
     def get_object(self):
         queryset = self.get_queryset()
-        print(queryset)
         user_pref = get_object_or_404(queryset, user=self.request.user)
-        print(self.request.user)
-        print(user_pref)
         return user_pref
 
 

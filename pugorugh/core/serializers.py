@@ -48,9 +48,6 @@ class ProfileSerializer(serializers.ModelSerializer):
     """
 
 class DogSerializer(serializers.ModelSerializer):
-    """
-    A profile serializer to return the profile / user details
-    """
 
     class Meta:
         model = Dog
