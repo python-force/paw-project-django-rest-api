@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from pugorugh.core.models import Profile
+from pugorugh.core.models import Profile, Dog
 
 from rest_framework import serializers
 
@@ -30,7 +30,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ('age', 'gender', 'size')
+        fields = ('user', 'bio', 'location', 'age', 'gender', 'size')
 
     """
     def create(self, validated_data):
@@ -46,3 +46,12 @@ class ProfileSerializer(serializers.ModelSerializer):
         return profile
 
     """
+
+class DogSerializer(serializers.ModelSerializer):
+    """
+    A profile serializer to return the profile / user details
+    """
+
+    class Meta:
+        model = Dog
+        fields = ('name', 'image_filename', 'breed', 'age', 'gender', 'size')
