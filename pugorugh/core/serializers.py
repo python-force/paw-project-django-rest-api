@@ -30,7 +30,8 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ('user', 'bio', 'location', 'age', 'gender', 'size')
+        extra_kwargs = {'user': {'write_only': True}}
+        fields = ('bio', 'location', 'age', 'gender', 'size')
 
     """
     def create(self, validated_data):

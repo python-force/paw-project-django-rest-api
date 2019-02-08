@@ -1,23 +1,24 @@
-from django.conf.urls import url
+from django.urls import path, re_path, include
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 
 from rest_framework.urlpatterns import format_suffix_patterns
 from rest_framework.authtoken.views import obtain_auth_token
 
-from . views import UserRegisterView, ListProfileView, RetrieveUpdateProfileView, ListDogView
+from . views import UserRegisterView, ListProfileView, RetrieveUpdateProfileView, RetrieveDogView, UpdateUserDogView
 
 # API endpoints
 urlpatterns = format_suffix_patterns([
-    url(r'^api/user/login/$', obtain_auth_token, name='login-user'),
-    url(r'^api/user/preferences/', RetrieveUpdateProfileView.as_view(), name='user-preferences'),
-    url(r'^api/user/$', UserRegisterView.as_view(), name='register-user'),
-    url(r'^api/profiles/$', ListProfileView.as_view(), name='list-profiles'),
-    url(r'^api/dog/-1/undecided/next/$', ListDogView.as_view(), name='dog-list'),
-    url(r'^favicon\.ico$',
+    path('api/user/login/', obtain_auth_token, name='login-user'),
+    path('api/user/preferences/', RetrieveUpdateProfileView.as_view(), name='user-preferences'),
+    path('api/user/', UserRegisterView.as_view(), name='register-user'),
+    path('api/profiles/', ListProfileView.as_view(), name='list-profiles'),
+    path('api/dog/-1/undecided/next/', RetrieveDogView.as_view(), name='dog-list'),
+    path('api/dog/<int:pk>/<str:status>/', UpdateUserDogView.as_view(), name='dog-list'),
+    path('favicon\.ico',
         RedirectView.as_view(
             url='/static/icons/favicon.ico',
             permanent=True
         )),
-    url(r'^$', TemplateView.as_view(template_name='index.html'))
+    path('', TemplateView.as_view(template_name='index.html'))
 ])

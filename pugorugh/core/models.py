@@ -25,3 +25,8 @@ class Dog(models.Model):
     def __str__(self):
         return self.name
 
+
+class UserDog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    dog = models.ForeignKey(Dog, on_delete=models.CASCADE)
+    status = models.CharField(max_length=1, blank=True)
