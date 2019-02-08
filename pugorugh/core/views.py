@@ -1,4 +1,5 @@
 import random
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 
@@ -50,3 +51,13 @@ class RetrieveDogView(RetrieveAPIView):
 class UpdateUserDogView(RetrieveUpdateAPIView):
     queryset = Dog.objects.all()
     serializer_class = DogSerializer
+
+    def get_object(self):
+        if self.kwargs.get('pk') != "-1":
+            try:
+                dog = self.queryset.get(id=self.kwargs.get('pk'))
+                return dog
+            except ObjectDoesNotExist:
+                return None
+        else:
+            print('No Dog')
