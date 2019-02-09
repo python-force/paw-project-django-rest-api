@@ -5,9 +5,12 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import permissions
 from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, ListAPIView, RetrieveAPIView
+from rest_framework.response import Response
 
 from pugorugh.core.serializers import UserSerializer, ProfileSerializer, DogSerializer
 from pugorugh.core.models import Profile, Dog, UserDog
+
+from pugorugh.core.serializers import DogSerializer
 
 
 class UserRegisterView(CreateAPIView):
@@ -48,10 +51,11 @@ class RetrieveDogView(RetrieveAPIView):
         return dog
 
 class LikedDogView(RetrieveUpdateAPIView):
+    """Not Finished"""
     serializer_class = DogSerializer
 
     def get_queryset(self):
-        qs = Dog.objects.filter(doguser__user=self.request.user).filter(doguser__status="l")
+        qs = Dog.objects.filter(doguser__user=self.request.user)
         return qs
 
     def get_object(self):
@@ -59,6 +63,24 @@ class LikedDogView(RetrieveUpdateAPIView):
         dog = queryset.first()
         return dog
 
+    """
+    def put(self, request, *args, **kwargs):
+        user = self.request.user
+        status = self.kwargs.get('status')
+        dog = self.get_object()
+        try:
+            qs = self.get_queryset().get(dog=dog)
+            qs.status = status
+            qs.save()
+        except:
+            UserDog.objects.create(
+                user=user,
+                dog=dog,
+                status=status
+            )
+
+        return super().put(request, *args, **kwargs)
+    """
 
 class UpdateUserDogView(RetrieveUpdateAPIView):
     serializer_class = DogSerializer
@@ -66,10 +88,15 @@ class UpdateUserDogView(RetrieveUpdateAPIView):
     def get_queryset(self):
         return UserDog.objects.filter(user=self.request.user)
 
+    def get_object(self):
+        dog = Dog.objects.get(id=7)
+        return dog
+
     def put(self, request, *args, **kwargs):
         user = self.request.user
         status = self.kwargs.get('status')
         dog = Dog.objects.get(id=self.kwargs.get('pk'))
+
         if not self.get_queryset():
             UserDog.objects.create(
                 user=user,
@@ -88,6 +115,19 @@ class UpdateUserDogView(RetrieveUpdateAPIView):
                     status=status
                 )
         return super().put(request, *args, **kwargs)
+
+    """
+    def get_object(self):
+        pk = self.kwargs.get('pk')
+       
+        if pk == 'undefined':
+            dog = Dog.objects.first()
+        else:
+            dog = Dog.objects.get(id=self.kwargs.get('pk'))
+       
+        print(Dog.objects.get(id=3))
+        return Dog.objects.get(id=3)
+    """
 
     """
     def get_object(self):
