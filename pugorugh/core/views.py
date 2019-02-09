@@ -48,8 +48,11 @@ class RetrieveDogView(RetrieveAPIView):
         return dog
 
 class LikedDogView(RetrieveUpdateAPIView):
-    queryset = Dog.objects.all()
     serializer_class = DogSerializer
+
+    def get_queryset(self):
+        qs = Dog.objects.filter(doguser__user=self.request.user).filter(doguser__status="l")
+        return qs
 
     def get_object(self):
         queryset = self.get_queryset()
