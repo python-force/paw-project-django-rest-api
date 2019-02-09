@@ -5,7 +5,7 @@ from django.views.generic.base import RedirectView
 from rest_framework.urlpatterns import format_suffix_patterns
 from rest_framework.authtoken.views import obtain_auth_token
 
-from . views import UserRegisterView, ListProfileView, RetrieveUpdateProfileView, RetrieveDogView, UpdateUserDogView
+from . views import UserRegisterView, ListProfileView, RetrieveUpdateProfileView, RetrieveDogView, UpdateUserDogView, LikedDogView
 
 # API endpoints
 urlpatterns = format_suffix_patterns([
@@ -15,6 +15,7 @@ urlpatterns = format_suffix_patterns([
     path('api/profiles/', ListProfileView.as_view(), name='list-profiles'),
     path('api/dog/-1/undecided/next/', RetrieveDogView.as_view(), name='dog-list'),
     path('api/dog/<str:pk>/<str:status>/', UpdateUserDogView.as_view(), name='dog-list'),
+    path('api/dog/<str:pk>/liked/next/', LikedDogView.as_view(), name='dog-list'),
     path('favicon\.ico',
         RedirectView.as_view(
             url='/static/icons/favicon.ico',

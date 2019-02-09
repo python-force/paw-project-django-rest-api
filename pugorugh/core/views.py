@@ -7,7 +7,7 @@ from rest_framework import permissions
 from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, ListAPIView, RetrieveAPIView
 
 from pugorugh.core.serializers import UserSerializer, ProfileSerializer, DogSerializer
-from pugorugh.core.models import Profile, Dog
+from pugorugh.core.models import Profile, Dog, UserDog
 
 
 class UserRegisterView(CreateAPIView):
@@ -47,11 +47,46 @@ class RetrieveDogView(RetrieveAPIView):
         dog = queryset.first()
         return dog
 
-
-class UpdateUserDogView(RetrieveUpdateAPIView):
+class LikedDogView(RetrieveUpdateAPIView):
     queryset = Dog.objects.all()
     serializer_class = DogSerializer
 
+    def get_object(self):
+        queryset = self.get_queryset()
+        dog = queryset.first()
+        return dog
+
+
+class UpdateUserDogView(RetrieveUpdateAPIView):
+    serializer_class = DogSerializer
+
+    def get_queryset(self):
+        return UserDog.objects.filter(user=self.request.user)
+
+    def put(self, request, *args, **kwargs):
+        user = self.request.user
+        status = self.kwargs.get('status')
+        dog = Dog.objects.get(id=self.kwargs.get('pk'))
+        if not self.get_queryset():
+            UserDog.objects.create(
+                user=user,
+                dog=dog,
+                status=status
+            )
+        else:
+            try:
+                qs = self.get_queryset().get(dog=dog)
+                qs.status = status
+                qs.save()
+            except:
+                UserDog.objects.create(
+                    user=user,
+                    dog=dog,
+                    status=status
+                )
+        return super().put(request, *args, **kwargs)
+
+    """
     def get_object(self):
         if self.kwargs.get('pk') != "-1":
             try:
@@ -61,3 +96,4 @@ class UpdateUserDogView(RetrieveUpdateAPIView):
                 return None
         else:
             print('No Dog')
+    """
