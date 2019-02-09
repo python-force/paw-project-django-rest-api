@@ -50,7 +50,7 @@ class RetrieveDogView(RetrieveAPIView):
         dog = queryset.first()
         return dog
 
-class LikedDogView(RetrieveUpdateAPIView):
+class NextDogView(RetrieveUpdateAPIView):
     """Not Finished"""
     serializer_class = DogSerializer
 
