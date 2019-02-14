@@ -134,6 +134,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = [
-    os.path.join(os.path.dirname(BASE_DIR), "assets"),
-]
+#STATICFILES_DIRS = [
+#    os.path.join(os.path.dirname(BASE_DIR), "assets"),
+#]
+
+# Additional locations of static files
+STATICFILES_DIRS = (
+    os.path.join(os.path.dirname(os.path.dirname(__file__)), '../pugorugh/core/static/'),
+)

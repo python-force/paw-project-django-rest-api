@@ -27,6 +27,6 @@ class Dog(models.Model):
 
 
 class UserDog(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    dog = models.ForeignKey(Dog, related_query_name="doguser" ,on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_query_name="usertag", on_delete=models.CASCADE)
+    dog = models.ForeignKey(Dog, related_name="dogs", related_query_name="dogtag" ,on_delete=models.CASCADE)
     status = models.CharField(max_length=1, blank=True, null=True)

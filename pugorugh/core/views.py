@@ -1,5 +1,6 @@
 import random
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 
@@ -41,6 +42,7 @@ class RetrieveUpdateProfileView(RetrieveUpdateAPIView):
         return response
     """
 
+
 class RetrieveDogView(RetrieveAPIView):
     queryset = Dog.objects.all()
     serializer_class = DogSerializer
@@ -55,13 +57,28 @@ class NextDogView(RetrieveUpdateAPIView):
     serializer_class = DogSerializer
 
     def get_queryset(self):
-        qs = Dog.objects.filter(doguser__user=self.request.user)
-        return qs
+        if self.kwargs.get('dog_filter') == 'liked':
+            queryset = Dog.objects.filter(dogtag__status='liked').filter(dogtag__user_id=self.request.user.id)
+            return queryset
+        elif self.kwargs.get('dog_filter') == 'disliked':
+            queryset = Dog.objects.filter(dogtag__status='disliked').filter(dogtag__user_id=self.request.user.id)
+            return queryset
+        else:
+            queryset = Dog.objects.exclude(dogtag__user_id=self.request.user.id)
+            return queryset
 
     def get_object(self):
-        queryset = self.get_queryset()
-        dog = queryset.first()
-        return dog
+        dogs = self.get_queryset().filter(id__gt=self.kwargs.get('pk'))
+        obj = dogs.first()
+        if not obj:
+            raise Http404
+        return obj
+
+    """
+    def get_queryset(self):
+        qs = Dog.objects.filter(doguser__user=self.request.user)
+        return qs
+    """
 
     """
     def put(self, request, *args, **kwargs):
@@ -89,8 +106,11 @@ class UpdateUserDogView(RetrieveUpdateAPIView):
         return UserDog.objects.filter(user=self.request.user)
 
     def get_object(self):
-        dog = Dog.objects.get(id=7)
-        return dog
+        dogs = Dog.objects.filter(id__gt=self.kwargs.get('pk'))
+        obj = dogs.first()
+        if not obj:
+            raise Http404
+        return obj
 
     def put(self, request, *args, **kwargs):
         user = self.request.user
@@ -104,16 +124,23 @@ class UpdateUserDogView(RetrieveUpdateAPIView):
                 status=status
             )
         else:
-            try:
-                qs = self.get_queryset().get(dog=dog)
-                qs.status = status
-                qs.save()
-            except:
-                UserDog.objects.create(
-                    user=user,
-                    dog=dog,
-                    status=status
-                )
+            if status == 'undecided':
+                try:
+                    qs = self.get_queryset().get(dog=dog)
+                    qs.delete()
+                except:
+                    raise Http404
+            else:
+                try:
+                    qs = self.get_queryset().get(dog=dog)
+                    qs.status = status
+                    qs.save()
+                except:
+                    UserDog.objects.create(
+                        user=user,
+                        dog=dog,
+                        status=status
+                    )
         return super().put(request, *args, **kwargs)
 
     """
