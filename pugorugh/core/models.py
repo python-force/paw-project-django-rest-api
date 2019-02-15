@@ -15,11 +15,17 @@ class Profile(models.Model):
 
 
 class Dog(models.Model):
+    MALE = 'm'
+    FEMALE = 'f'
+    GENDER_CHOICES = (
+        (MALE, 'm'),
+        (FEMALE, 'f'),
+    )
     name = models.CharField(max_length=255, blank=True)
     image_filename = models.CharField(max_length=500, blank=True)
     breed = models.CharField(max_length=50, blank=True)
     age = models.PositiveIntegerField(blank=True)
-    gender = models.CharField(max_length=10, blank=True)
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True)
     size = models.CharField(max_length=10, blank=True)
 
     def __str__(self):

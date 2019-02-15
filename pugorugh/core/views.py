@@ -57,14 +57,23 @@ class NextDogView(RetrieveUpdateAPIView):
     serializer_class = DogSerializer
 
     def get_queryset(self):
+        user_obj = Profile.objects.get(user=self.request.user)
+        gender = user_obj.gender.split(',')
+        if len(gender) == 1:
+            queryset = Dog.objects.filter(gender=gender[0])
+        elif len(gender) == 0:
+            raise Http404
+        else:
+            queryset = Dog.objects.all()
+
         if self.kwargs.get('dog_filter') == 'liked':
-            queryset = Dog.objects.filter(dogtag__status='liked').filter(dogtag__user_id=self.request.user.id)
+            queryset = queryset.filter(dogtag__status='liked').filter(dogtag__user_id=self.request.user.id)
             return queryset
         elif self.kwargs.get('dog_filter') == 'disliked':
-            queryset = Dog.objects.filter(dogtag__status='disliked').filter(dogtag__user_id=self.request.user.id)
+            queryset = queryset.filter(dogtag__status='disliked').filter(dogtag__user_id=self.request.user.id)
             return queryset
         else:
-            queryset = Dog.objects.exclude(dogtag__user_id=self.request.user.id)
+            queryset = queryset.exclude(dogtag__user_id=self.request.user.id)
             return queryset
 
     def get_object(self):
