@@ -2,7 +2,7 @@
 
 ## Requirements
 
-Create the models, serializers, and views to power the provided Angular
+Create the models, serializers, and views to power the provided React
 application. You can check through the supplied JavaScript to see what
 resources should be available or check below. You are allowed to change,
 extend, and improve the JavaScript if desired, but the final result must still
