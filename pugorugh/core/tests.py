@@ -27,7 +27,6 @@ class UserRegisterViewTests(APITestCase):
 
 
 class RetrieveUpdateProfileViewTests(APITestCase):
-    permission_classes = (permissions.AllowAny,)
 
     """Updating Profile"""
     def setUp(self):
@@ -52,15 +51,15 @@ class RetrieveUpdateProfileViewTests(APITestCase):
         """
         self.client.login(username='johnconnor', password='terminator')
         url = reverse('user-preferences')
-        data = {"bio": "Aboutdude",
+        data = {"bio": "About John",
                 "location": "",
                 "age": "a,s",
                 "gender": "m,f",
                 "size": "s,m,l,xl"}
-        response = self.client.post(url, data, format='json')
+        response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # self.assertEqual(self.profile, 1)
-        # self.assertEqual(self.profile.bio, 'Aboutdude')
+        self.assertEqual(self.profile.user.username, 'johnconnor')
+        self.assertEqual(self.profile.bio, 'About John')
 
 
 class NextDogViewTests(APITestCase):
