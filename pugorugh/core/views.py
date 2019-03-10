@@ -3,6 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 
 from rest_framework import permissions
 from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, ListAPIView, RetrieveAPIView
@@ -20,9 +21,11 @@ class UserRegisterView(CreateAPIView):
     serializer_class = UserSerializer
 
 
+"""
 class ListProfileView(ListAPIView):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
+"""
 
 
 class RetrieveUpdateProfileView(RetrieveUpdateAPIView):
@@ -43,6 +46,7 @@ class RetrieveUpdateProfileView(RetrieveUpdateAPIView):
     """
 
 
+"""
 class RetrieveDogView(RetrieveAPIView):
     queryset = Dog.objects.all()
     serializer_class = DogSerializer
@@ -51,20 +55,74 @@ class RetrieveDogView(RetrieveAPIView):
         queryset = self.get_queryset()
         dog = queryset.first()
         return dog
+"""
+
 
 class NextDogView(RetrieveUpdateAPIView):
     """Not Finished"""
     serializer_class = DogSerializer
 
-    def get_queryset(self):
+    def detect_user(self):
         user_obj = Profile.objects.get(user=self.request.user)
-        gender = user_obj.gender.split(',')
+        return user_obj
+
+    def gender_selection(self):
+        gender = self.detect_user().gender.split(',')
         if len(gender) == 1:
             queryset = Dog.objects.filter(gender=gender[0])
         elif len(gender) == 0:
             raise Http404
         else:
             queryset = Dog.objects.all()
+
+        return queryset
+
+    def size_selection(self):
+        queryset = self.gender_selection()
+        sizes = self.detect_user().size.split(',')
+
+        # Turn list of values into list of Q objects
+        queries = [Q(size=size) for size in sizes]
+        query = Q()
+        for item in queries:
+            query |= item
+        queryset = queryset.filter(query)
+
+        return queryset
+
+
+    def age_selection(self):
+        queryset = self.size_selection()
+        ages = self.detect_user().age.split(',')
+
+        qs_list = []
+        for age in ages:
+            if age == 'b':
+                for dog in queryset:
+                    if dog.age <= 24:
+                        qs_list.append(queryset.filter(age=dog.age))
+            elif age == 'y':
+                for dog in queryset:
+                    if 25 <= dog.age <= 48:
+                        qs_list.append(queryset.filter(age=dog.age))
+            elif age == 'a':
+                for dog in queryset:
+                    if 49 <= dog.age <= 72:
+                        qs_list.append(queryset.filter(age=dog.age))
+            elif age == 's':
+                for dog in queryset:
+                    if 73 <= dog.age:
+                        qs_list.append(queryset.filter(age=dog.age))
+
+
+        final_queryset = UserDog.objects.none()
+        for qs in qs_list:
+            final_queryset |= qs
+
+        return final_queryset
+
+    def get_queryset(self):
+        queryset=self.age_selection()
 
         if self.kwargs.get('dog_filter') == 'liked':
             queryset = queryset.filter(dogtag__status='liked').filter(dogtag__user_id=self.request.user.id)
@@ -150,7 +208,7 @@ class UpdateUserDogView(RetrieveUpdateAPIView):
                         dog=dog,
                         status=status
                     )
-        return super().put(request, *args, **kwargs)
+        return self.update(request, *args, **kwargs)
 
     """
     def get_object(self):
