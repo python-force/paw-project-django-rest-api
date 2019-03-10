@@ -21,11 +21,11 @@ class UserRegisterView(CreateAPIView):
     serializer_class = UserSerializer
 
 
-"""
+
 class ListProfileView(ListAPIView):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
-"""
+
 
 
 class RetrieveUpdateProfileView(RetrieveUpdateAPIView):
@@ -46,7 +46,7 @@ class RetrieveUpdateProfileView(RetrieveUpdateAPIView):
     """
 
 
-"""
+
 class RetrieveDogView(RetrieveAPIView):
     queryset = Dog.objects.all()
     serializer_class = DogSerializer
@@ -55,7 +55,7 @@ class RetrieveDogView(RetrieveAPIView):
         queryset = self.get_queryset()
         dog = queryset.first()
         return dog
-"""
+
 
 
 class NextDogView(RetrieveUpdateAPIView):
