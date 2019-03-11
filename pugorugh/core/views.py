@@ -125,14 +125,23 @@ class NextDogView(RetrieveUpdateAPIView):
         queryset=self.age_selection()
 
         if self.kwargs.get('dog_filter') == 'liked':
-            queryset = queryset.filter(dogtag__status='liked').filter(dogtag__user_id=self.request.user.id)
-            return queryset
+            try:
+                queryset = queryset.filter(dogtag__status='liked').filter(dogtag__user_id=self.request.user.id)
+                return queryset
+            except:
+                raise Http404
         elif self.kwargs.get('dog_filter') == 'disliked':
-            queryset = queryset.filter(dogtag__status='disliked').filter(dogtag__user_id=self.request.user.id)
-            return queryset
+            try:
+                queryset = queryset.filter(dogtag__status='disliked').filter(dogtag__user_id=self.request.user.id)
+                return queryset
+            except:
+                raise Http404
         else:
-            queryset = queryset.exclude(dogtag__user_id=self.request.user.id)
-            return queryset
+            try:
+                queryset = queryset.exclude(dogtag__user_id=self.request.user.id)
+                return queryset
+            except:
+                raise Http404
 
     def get_object(self):
         dogs = self.get_queryset().filter(id__gt=self.kwargs.get('pk'))

@@ -36,3 +36,17 @@ class UserDog(models.Model):
     user = models.ForeignKey(User, related_query_name="usertag", on_delete=models.CASCADE)
     dog = models.ForeignKey(Dog, related_name="dogs", related_query_name="dogtag" ,on_delete=models.CASCADE)
     status = models.CharField(max_length=1, blank=True, null=True)
+
+
+class Company(models.Model):
+    name = models.CharField(max_length=30)
+
+class Employee(models.Model):
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+    company = models.ForeignKey(
+        Company,
+        related_name='employees',
+        related_query_name='employee',
+        on_delete=models.CASCADE,
+    )
