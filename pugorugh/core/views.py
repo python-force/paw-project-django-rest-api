@@ -37,15 +37,6 @@ class RetrieveUpdateProfileView(RetrieveUpdateAPIView):
         user_pref = get_object_or_404(queryset, user=self.request.user)
         return user_pref
 
-    """
-    def put(self, request, *args, **kwargs):
-        import pdb;
-        pdb.set_trace()
-        response = super().put(*args, **kwargs)
-        return response
-    """
-
-
 
 class RetrieveDogView(RetrieveAPIView):
     queryset = Dog.objects.all()
@@ -150,30 +141,6 @@ class NextDogView(RetrieveUpdateAPIView):
             raise Http404
         return obj
 
-    """
-    def get_queryset(self):
-        qs = Dog.objects.filter(doguser__user=self.request.user)
-        return qs
-    """
-
-    """
-    def put(self, request, *args, **kwargs):
-        user = self.request.user
-        status = self.kwargs.get('status')
-        dog = self.get_object()
-        try:
-            qs = self.get_queryset().get(dog=dog)
-            qs.status = status
-            qs.save()
-        except:
-            UserDog.objects.create(
-                user=user,
-                dog=dog,
-                status=status
-            )
-
-        return super().put(request, *args, **kwargs)
-    """
 
 class UpdateUserDogView(RetrieveUpdateAPIView):
     serializer_class = DogSerializer
@@ -218,28 +185,3 @@ class UpdateUserDogView(RetrieveUpdateAPIView):
                         status=status
                     )
         return self.update(request, *args, **kwargs)
-
-    """
-    def get_object(self):
-        pk = self.kwargs.get('pk')
-       
-        if pk == 'undefined':
-            dog = Dog.objects.first()
-        else:
-            dog = Dog.objects.get(id=self.kwargs.get('pk'))
-       
-        print(Dog.objects.get(id=3))
-        return Dog.objects.get(id=3)
-    """
-
-    """
-    def get_object(self):
-        if self.kwargs.get('pk') != "-1":
-            try:
-                dog = self.queryset.get(id=self.kwargs.get('pk'))
-                return dog
-            except ObjectDoesNotExist:
-                return None
-        else:
-            print('No Dog')
-    """

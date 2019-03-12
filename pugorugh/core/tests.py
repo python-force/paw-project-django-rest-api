@@ -340,7 +340,8 @@ class UpdateUserDogViewTests(APITestCase):
     def test_update_userdog_view_adding_dislike_to_already_liked_dogs(self):
         url = reverse('dog-list', kwargs={'pk': 1, 'status': 'liked'})
         data = {}
-        self.client.put(url, data, format='json')
+        response = self.client.put(url, data, format='json')
+        print(response.data)
         dog = Dog.objects.filter(dogtag__status='liked').filter(dogtag__user_id=self.user.id).first()
         # print(dog.dogs[0].status)
         self.assertEqual(dog.name, 'Sky')
