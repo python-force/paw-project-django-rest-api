@@ -31,7 +31,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         extra_kwargs = {'user': {'write_only': True}}
-        fields = ('bio', 'location', 'age', 'gender', 'size')
+        fields = ('bio', 'age', 'gender', 'size', 'color')
 
     """
     def create(self, validated_data):
@@ -52,4 +52,4 @@ class DogSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Dog
-        fields = ('id', 'name', 'image_filename', 'breed', 'age', 'gender', 'size')
+        fields = ('id', 'name', 'image_filename', 'breed', 'age', 'gender', 'size', 'color')

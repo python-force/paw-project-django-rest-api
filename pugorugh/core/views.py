@@ -23,11 +23,9 @@ class UserRegisterView(CreateAPIView):
     serializer_class = UserSerializer
 
 
-
 class ListProfileView(ListAPIView):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
-
 
 
 class RetrieveUpdateProfileView(RetrieveUpdateAPIView):
@@ -69,14 +67,26 @@ class NextDogView(RetrieveUpdateAPIView):
         user_obj = Profile.objects.get(user=self.request.user)
         return user_obj
 
-    def gender_selection(self):
-        gender = self.detect_user().gender.split(',')
-        if len(gender) == 1:
-            queryset = Dog.objects.filter(gender=gender[0])
-        elif len(gender) == 0:
+    def color_selection(self):
+        color = self.detect_user().color.split(',')
+        if len(color) == 1:
+            queryset = Dog.objects.filter(color=color[0])
+        elif len(color) == 0:
             raise Http404
         else:
             queryset = Dog.objects.all()
+
+        return queryset
+
+    def gender_selection(self):
+        queryset = self.color_selection()
+        gender = self.detect_user().gender.split(',')
+        if len(gender) == 1:
+            queryset = queryset.filter(gender=gender[0])
+        elif len(gender) == 0:
+            raise Http404
+        else:
+            queryset = queryset
 
         return queryset
 

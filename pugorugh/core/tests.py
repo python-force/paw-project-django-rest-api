@@ -39,7 +39,6 @@ class RetrieveUpdateProfileViewTests(APITestCase):
         self.profile = Profile.objects.create(
             user=self.user,
             bio='About',
-            location='Florida',
             age='b,y,a,s',
             gender='m,f',
             size='s,m,l,xl'
@@ -53,7 +52,6 @@ class RetrieveUpdateProfileViewTests(APITestCase):
         """
         url = reverse('user-preferences')
         data = {"bio": "About John",
-                "location": "Brooklyn",
                 "age": "b,y,a,s",
                 "gender": "m,f",
                 "size": "s,m,l,xl"}
@@ -62,7 +60,6 @@ class RetrieveUpdateProfileViewTests(APITestCase):
         self.profile.refresh_from_db()
         self.assertEqual(self.profile.user.username, 'johnconnor')
         self.assertEqual(self.profile.bio, 'About John')
-        self.assertEqual(self.profile.location, 'Brooklyn')
 
 
 class NextDogViewTests(APITestCase):
@@ -77,10 +74,10 @@ class NextDogViewTests(APITestCase):
         self.profile = Profile.objects.create(
             user=self.user,
             bio='About',
-            location='Brooklyn',
             age='b,y,a,s',
             gender='m,f',
-            size='s,m,l,xl'
+            size='s,m,l,xl',
+            color='d,l'
         )
 
         """Creating 4 Dogs"""
@@ -90,7 +87,8 @@ class NextDogViewTests(APITestCase):
             breed='Daschund',
             age=18,
             gender='m',
-            size='s'
+            size='s',
+            color='d'
         )
         self.dog2 = Dog.objects.create(
             name='Muffin',
@@ -98,7 +96,8 @@ class NextDogViewTests(APITestCase):
             breed='Labrador',
             age=29,
             gender='m',
-            size='xl'
+            size='xl',
+            color='d'
         )
         self.dog3 = Dog.objects.create(
             name='Zeus',
@@ -106,7 +105,8 @@ class NextDogViewTests(APITestCase):
             breed='Jack Russell',
             age=60,
             gender='m',
-            size='m'
+            size='m',
+            color = 'l'
         )
         self.dog4 = Dog.objects.create(
             name='Athena',
@@ -114,7 +114,8 @@ class NextDogViewTests(APITestCase):
             breed='Jack Russell',
             age=192,
             gender='f',
-            size='l'
+            size='l',
+            color='l'
         )
         self.client.login(username='johnconnor', password='terminator')
 
@@ -148,7 +149,8 @@ class NextDogViewTests(APITestCase):
                                          'breed': 'Daschund',
                                          'age': 18,
                                          'gender': 'm',
-                                         'size': 's'})
+                                         'size': 's',
+                                         'color': 'd'})
 
     def test_next_dog_view_young(self):
         self.profile.age = 'y'
@@ -163,7 +165,8 @@ class NextDogViewTests(APITestCase):
                                          'breed': 'Labrador',
                                          'age': 29,
                                          'gender': 'm',
-                                         'size': 'xl'})
+                                         'size': 'xl',
+                                         'color': 'd'})
 
     def test_next_dog_view_adult(self):
         self.profile.age = 'a'
@@ -178,7 +181,8 @@ class NextDogViewTests(APITestCase):
                                          'breed': 'Jack Russell',
                                          'age': 60,
                                          'gender': 'm',
-                                         'size': 'm'})
+                                         'size': 'm',
+                                         'color': 'l'})
 
     def test_next_dog_view_senior(self):
         self.profile.age = 's'
@@ -193,7 +197,8 @@ class NextDogViewTests(APITestCase):
                                          'breed': 'Jack Russell',
                                          'age': 192,
                                          'gender': 'f',
-                                         'size': 'l'})
+                                         'size': 'l',
+                                         'color': 'l'})
 
     def test_next_dog_view_gender_only_one(self):
         self.profile.gender = 'f'
@@ -208,7 +213,8 @@ class NextDogViewTests(APITestCase):
                                          'breed': 'Jack Russell',
                                          'age': 192,
                                          'gender': 'f',
-                                         'size': 'l'})
+                                         'size': 'l',
+                                         'color': 'l'})
 
     def test_next_dog_view_gender_404_not_found(self): # raise Http404 - test is working but not removing in HTML
         self.profile.gender = ''
@@ -234,7 +240,6 @@ class UpdateUserDogViewTests(APITestCase):
         self.profile = Profile.objects.create(
             user=self.user,
             bio='About',
-            location='Brooklyn',
             age='b,y,a,s',
             gender='m,f',
             size='s,m,l,xl'
