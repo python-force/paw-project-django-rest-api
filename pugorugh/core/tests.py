@@ -275,6 +275,22 @@ class UpdateUserDogViewTests(APITestCase):
         )
         self.client.login(username='johnconnor', password='terminator')
 
+        # Having 1st dog liked in UserDog
+        url = reverse('dog-list', kwargs={'pk': 1, 'status': 'liked'})
+        data = {}
+        self.client.put(url, data, format='json')
+
+        # Having 2nd dog disliked in UserDog
+        url = reverse('dog-list', kwargs={'pk': 4, 'status': 'disliked'})
+        data = {}
+        self.client.put(url, data, format='json')
+
+    # Test to make sure the Dog is being liked in UserDog Table
+    def test_update_userdog_view_dog_exists_liked(self):
+        dog = Dog.objects.filter(dogtag__status='liked').filter(dogtag__user_id=self.user.id).first()
+        self.assertEqual(dog.name, 'Sky')
+        self.assertEqual(Dog.objects.filter(dogtag__status='liked').filter(dogtag__user_id=self.user.id).exists(), True)
+
     def test_animals_exists(self):
         """Animals Exists"""
         dog1 = Dog.objects.get(name="Sky")
@@ -294,26 +310,41 @@ class UpdateUserDogViewTests(APITestCase):
 
     def test_update_userdog_view_perform_update(self):
         url = reverse('dog-list', kwargs={'pk': 1, 'status': 'liked'})
-        data = {'id': 2,
-                'name': 'Muffin',
-                'image_filename': '4.jpg',
-                'breed': 'Labrador',
-                'age': 78,
+        data = {'id': 1,
+                'name': 'Sky',
+                'image_filename': '3.jpg',
+                'breed': 'Daschund',
+                'age': 15,
                 'gender': 'm',
-                'size': 'xl'}
+                'size': 's'}
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.dog2.refresh_from_db()
-        self.assertEqual(self.dog2.age, 78)
+        self.dog.refresh_from_db()
+        self.assertEqual(self.dog.age, 15)
 
-    def test_update_userdog_view_liked(self):
-        url = reverse('dog-list', kwargs={'pk': 1, 'status': 'liked'})
+    def test_next_dog_view_userdog_query_liked(self):
+        url = reverse('dog-filter-detail', kwargs={'pk': -1, 'dog_filter': 'liked'})
         data = {}
-        self.client.put(url, data, format='json')
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         dog = Dog.objects.filter(dogtag__status='liked').filter(dogtag__user_id=self.user.id).first()
-        # print(dog.dogs[0].status)
         self.assertEqual(dog.name, 'Sky')
 
+    def test_next_dog_view_userdog_query_not_exist_liked(self):
+        url = reverse('dog-filter-detail', kwargs={'pk': 1, 'dog_filter': 'liked'})
+        data = {}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.status_code, 404)
+
+    def test_next_dog_view_userdog_query_disliked(self):
+        url = reverse('dog-filter-detail', kwargs={'pk': 3, 'dog_filter': 'disliked'})
+        data = {}
+        response = self.client.get(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        dog = Dog.objects.filter(dogtag__status='disliked').filter(dogtag__user_id=self.user.id).first()
+        self.assertEqual(dog.name, 'Athena')
+
+    def test_update_userdog_view_disliked(self):
         url = reverse('dog-list', kwargs={'pk': 1, 'status': 'undecided'})
         data = {}
         response = self.client.put(url, data, format='json')
@@ -321,39 +352,49 @@ class UpdateUserDogViewTests(APITestCase):
         self.assertFalse(Dog.objects.filter(dogtag__status='liked').filter(dogtag__user_id=self.user.id).exists())
 
     def test_update_userdog_view_changing_liked_to_disliked(self):
-        url = reverse('dog-list', kwargs={'pk': 1, 'status': 'liked'})
-        data = {}
-        self.client.put(url, data, format='json')
-        dog = Dog.objects.filter(dogtag__status='liked').filter(dogtag__user_id=self.user.id).first()
-        # print(dog.dogs[0].status)
-        self.assertEqual(dog.name, 'Sky')
-
         url = reverse('dog-list', kwargs={'pk': 1, 'status': 'disliked'})
         data = {}
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         dog = Dog.objects.filter(dogtag__status='disliked').filter(dogtag__user_id=self.user.id).first()
         self.assertEqual(dog.name, 'Sky')
-        print(dog)
         self.assertTrue(Dog.objects.filter(dogtag__status='disliked').filter(dogtag__user_id=self.user.id).exists())
 
     def test_update_userdog_view_adding_dislike_to_already_liked_dogs(self):
-        url = reverse('dog-list', kwargs={'pk': 1, 'status': 'liked'})
-        data = {}
-        response = self.client.put(url, data, format='json')
-        print(response.data)
-        dog = Dog.objects.filter(dogtag__status='liked').filter(dogtag__user_id=self.user.id).first()
-        # print(dog.dogs[0].status)
-        self.assertEqual(dog.name, 'Sky')
-
         url = reverse('dog-list', kwargs={'pk': 2, 'status': 'disliked'})
         data = {}
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         dog = Dog.objects.filter(dogtag__status='disliked').filter(dogtag__user_id=self.user.id).first()
         self.assertEqual(dog.name, 'Muffin')
-        print(dog)
         self.assertTrue(Dog.objects.filter(dogtag__status='disliked').filter(dogtag__user_id=self.user.id).exists())
+
+    def test_update_userdog_view_bad_status(self):
+        data = {'pk': 1, 'status': 'notanoption'}
+        url = reverse('dog-list', kwargs=data)
+        # attempt to PUT request the bad status data to that route.
+        response = self.client.put(url, data, format='json')
+
+        # Does not exist because of wrong status
+        self.assertEqual(response.status_code, 404)
+
+
+    """
+    def test_update_userdog_view_adding_dislike_to_already_liked_dogs(self):
+        data = {'pk': 1, 'status': 'liked'}
+        url = reverse('dog-list', kwargs=data)
+        # attempt to PUT request the data to that route.
+        response = self.client.put(url, data, format='json')
+
+        pk = response.data.get('id', 0)  # default to 0 if no 'id' key.
+
+        # if the PUT performs correctly, the API should return JSON
+        # with the same dog PK.
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(pk, data.get('pk'))
+        
+    """
+
 
 
 

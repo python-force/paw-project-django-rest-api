@@ -1,13 +1,15 @@
-import random
-from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 
 from rest_framework import permissions
-from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, ListAPIView, RetrieveAPIView
-from rest_framework.response import Response
+from rest_framework.generics import (CreateAPIView,
+                                     RetrieveUpdateAPIView,
+                                     ListCreateAPIView,
+                                     RetrieveAPIView,
+                                     RetrieveUpdateDestroyAPIView,
+                                     ListAPIView)
 
 from pugorugh.core.serializers import UserSerializer, ProfileSerializer, DogSerializer
 from pugorugh.core.models import Profile, Dog, UserDog
@@ -36,6 +38,16 @@ class RetrieveUpdateProfileView(RetrieveUpdateAPIView):
         queryset = self.get_queryset()
         user_pref = get_object_or_404(queryset, user=self.request.user)
         return user_pref
+
+
+class ListCreateDog(ListCreateAPIView):
+    queryset = Dog.objects.all()
+    serializer_class = DogSerializer
+
+
+class RetrieveUpdateDog(RetrieveUpdateDestroyAPIView):
+    queryset = Dog.objects.all()
+    serializer_class = DogSerializer
 
 
 class RetrieveDogView(RetrieveAPIView):
@@ -149,11 +161,15 @@ class UpdateUserDogView(RetrieveUpdateAPIView):
         return UserDog.objects.filter(user=self.request.user)
 
     def get_object(self):
-        dogs = Dog.objects.filter(id__gt=self.kwargs.get('pk'))
-        obj = dogs.first()
-        if not obj:
+        status = self.kwargs.get('status')
+        if status == 'liked' or status =='disliked' or status == 'undecided':
+            dogs = Dog.objects.filter(id=self.kwargs.get('pk'))
+            obj = dogs.first()
+            if not obj:
+                raise Http404
+            return obj
+        else:
             raise Http404
-        return obj
 
     def put(self, request, *args, **kwargs):
         user = self.request.user
@@ -173,7 +189,7 @@ class UpdateUserDogView(RetrieveUpdateAPIView):
                     qs.delete()
                 except:
                     raise Http404
-            else:
+            elif status == 'liked' or status =='disliked':
                 try:
                     qs = self.get_queryset().get(dog=dog)
                     qs.status = status
@@ -184,4 +200,31 @@ class UpdateUserDogView(RetrieveUpdateAPIView):
                         dog=dog,
                         status=status
                     )
+            else:
+                raise Http404
         return self.update(request, *args, **kwargs)
+
+
+"""
+class EmployeeCompanyList(generic.ListView):
+    model = models.Company
+    template_name = 'list.html'
+    context_object_name = 'companies'
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        companies = context.get('companies')
+        # <QuerySet [<Company: Company object (1)>, <Company: Company object (2)>]>
+
+        # Ex. companies[0].employees.filter(first_name='Vitor')[0].last_name
+        employees = companies[0].employees.filter(first_name='Chris')
+        print(employees)
+        emps = models.Employee.objects.filter(first_name='Chris')
+        print(emps)
+        # <QuerySet [<Employee: Employee object (2)>]>
+
+        first_employee = employees.first().first_name
+        # Chris
+
+        return context
+"""
