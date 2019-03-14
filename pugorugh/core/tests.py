@@ -33,6 +33,7 @@ class RetrieveUpdateProfileViewTests(APITestCase):
             email='dude@nasa.gov',
             password='terminator'
         )
+        """Create Profile"""
         self.profile = Profile.objects.create(
             user=self.user,
             bio='About',
@@ -40,11 +41,12 @@ class RetrieveUpdateProfileViewTests(APITestCase):
             gender='m,f',
             size='s,m,l,xl'
         )
+        """Login User"""
         self.client.login(username='johnconnor', password='terminator')
 
     def test_update_profile(self):
         """
-        Ensure we can create a new account object.
+        Update Profile Test
         """
         url = reverse('user-preferences')
         data = {"bio": "About John",
@@ -59,7 +61,10 @@ class RetrieveUpdateProfileViewTests(APITestCase):
 
 
 class NextDogViewTests(APITestCase):
-    """Testing NextDogAPI View"""
+    """
+    Testing NextDogAPI View
+    Init of User, Profile, 4 Dogs
+    """
     def setUp(self):
         """Creating User"""
         self.user = User.objects.create_user(
@@ -127,6 +132,7 @@ class NextDogViewTests(APITestCase):
         self.assertEqual(dog4.id, 4)
 
     def test_next_dog_view_pass(self):
+        """Testing if the View works 200"""
         url = reverse('dog-filter-detail',
                       kwargs={'pk': -1, 'dog_filter': 'undecided'})
         data = {}
@@ -151,6 +157,7 @@ class NextDogViewTests(APITestCase):
                                          'color': 'd'})
 
     def test_next_dog_view_young(self):
+        """Testing to show only young dog"""
         self.profile.age = 'y'
         self.profile.save()
         url = reverse('dog-filter-detail',
@@ -168,6 +175,7 @@ class NextDogViewTests(APITestCase):
                                          'color': 'd'})
 
     def test_next_dog_view_adult(self):
+        """Testing to show only adult dog"""
         self.profile.age = 'a'
         self.profile.save()
         url = reverse('dog-filter-detail',
@@ -185,6 +193,7 @@ class NextDogViewTests(APITestCase):
                                          'color': 'l'})
 
     def test_next_dog_view_senior(self):
+        """Testing to show only senior dog"""
         self.profile.age = 's'
         self.profile.save()
         url = reverse('dog-filter-detail',
@@ -202,6 +211,7 @@ class NextDogViewTests(APITestCase):
                                          'color': 'l'})
 
     def test_next_dog_view_gender_only_one(self):
+        """Testing to show only female"""
         self.profile.gender = 'f'
         self.profile.save()
         url = reverse('dog-filter-detail',
@@ -219,6 +229,7 @@ class NextDogViewTests(APITestCase):
                                          'color': 'l'})
 
     def test_next_dog_view_gender_404_not_found(self):
+        """Testing removing all gender 404"""
         self.profile.gender = ''
         self.profile.save()
         url = reverse('dog-filter-detail',
@@ -231,7 +242,7 @@ class NextDogViewTests(APITestCase):
 
 
 class UpdateUserDogViewTests(APITestCase):
-    """Testing NextDogAPI View"""
+    """Testing UpdateUserDogAPI View"""
 
     def setUp(self):
         """Creating User"""
@@ -240,6 +251,7 @@ class UpdateUserDogViewTests(APITestCase):
             email='dude@nasa.gov',
             password='terminator'
         )
+        """Creating Profile"""
         self.profile = Profile.objects.create(
             user=self.user,
             bio='About',
@@ -281,9 +293,10 @@ class UpdateUserDogViewTests(APITestCase):
             gender='f',
             size='l'
         )
+        """Login User"""
         self.client.login(username='johnconnor', password='terminator')
 
-        # Having 1st dog liked in UserDog
+        # Having 1st dog liked in UserDog Table
         url = reverse('dog-list', kwargs={'pk': 1, 'status': 'liked'})
         data = {}
         self.client.put(url, data, format='json')
@@ -293,8 +306,10 @@ class UpdateUserDogViewTests(APITestCase):
         data = {}
         self.client.put(url, data, format='json')
 
-    # Test to make sure the Dog is being liked in UserDog Table
     def test_update_userdog_view_dog_exists_liked(self):
+        """
+        Test to make sure the Dog is being liked in UserDog Table
+        """
         dog = Dog.objects.filter(dogtag__status='liked').\
             filter(dogtag__user_id=self.user.id).first()
         self.assertEqual(dog.name, 'Sky')
@@ -313,6 +328,9 @@ class UpdateUserDogViewTests(APITestCase):
         self.assertEqual(dog4.id, 4)
 
     def test_update_userdog_view_pass(self):
+        """
+        Test of passing the view with 200
+        """
         url = reverse('dog-list',
                       kwargs={'pk': 1, 'status': 'liked'})
         data = {}
@@ -320,6 +338,9 @@ class UpdateUserDogViewTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_update_userdog_view_perform_update(self):
+        """
+        Successful Update of Dogs age
+        """
         url = reverse('dog-list', kwargs={'pk': 1, 'status': 'liked'})
         data = {'id': 1,
                 'name': 'Sky',
@@ -334,6 +355,9 @@ class UpdateUserDogViewTests(APITestCase):
         self.assertEqual(self.dog.age, 15)
 
     def test_next_dog_view_userdog_query_liked(self):
+        """
+        Liking the Dog > moving to UserDog Table
+        """
         url = reverse('dog-filter-detail',
                       kwargs={'pk': -1, 'dog_filter': 'liked'})
         data = {}
@@ -344,6 +368,9 @@ class UpdateUserDogViewTests(APITestCase):
         self.assertEqual(dog.name, 'Sky')
 
     def test_next_dog_view_userdog_query_not_exist_liked(self):
+        """
+        UserDog table empty > No liked dogs
+        """
         url = reverse('dog-filter-detail',
                       kwargs={'pk': 1, 'dog_filter': 'liked'})
         data = {}
@@ -351,6 +378,9 @@ class UpdateUserDogViewTests(APITestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_next_dog_view_userdog_query_disliked(self):
+        """
+        Dislike the dog
+        """
         url = reverse('dog-filter-detail',
                       kwargs={'pk': 3, 'dog_filter': 'disliked'})
         data = {}
@@ -360,7 +390,10 @@ class UpdateUserDogViewTests(APITestCase):
             filter(dogtag__user_id=self.user.id).first()
         self.assertEqual(dog.name, 'Athena')
 
-    def test_update_userdog_view_disliked(self):
+    def test_update_userdog_view_changing_liked_to_undecided(self):
+        """
+        From being liked > undecided
+        """
         url = reverse('dog-list',
                       kwargs={'pk': 1, 'status': 'undecided'})
         data = {}
@@ -370,6 +403,9 @@ class UpdateUserDogViewTests(APITestCase):
                          filter(dogtag__user_id=self.user.id).exists())
 
     def test_update_userdog_view_changing_liked_to_disliked(self):
+        """
+        From being liked > disliked
+        """
         url = reverse('dog-list',
                       kwargs={'pk': 1, 'status': 'disliked'})
         data = {}
@@ -382,6 +418,9 @@ class UpdateUserDogViewTests(APITestCase):
                         filter(dogtag__user_id=self.user.id).exists())
 
     def test_update_userdog_view_adding_dislike_to_already_liked_dogs(self):
+        """
+        Adding Disliked to already liked
+        """
         url = reverse('dog-list',
                       kwargs={'pk': 2, 'status': 'disliked'})
         data = {}
@@ -394,6 +433,9 @@ class UpdateUserDogViewTests(APITestCase):
                         filter(dogtag__user_id=self.user.id).exists())
 
     def test_update_userdog_view_bad_status(self):
+        """
+        Submitting bad kwarg
+        """
         data = {'pk': 1, 'status': 'notanoption'}
         url = reverse('dog-list', kwargs=data)
         # attempt to PUT request the bad status data to that route.

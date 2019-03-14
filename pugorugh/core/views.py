@@ -7,9 +7,7 @@ from rest_framework import permissions
 from rest_framework.generics import (CreateAPIView,
                                      RetrieveUpdateAPIView,
                                      ListCreateAPIView,
-                                     RetrieveAPIView,
-                                     RetrieveUpdateDestroyAPIView,
-                                     ListAPIView)
+                                     RetrieveUpdateDestroyAPIView,)
 
 from pugorugh.core.serializers import (UserSerializer,
                                        ProfileSerializer,
@@ -18,17 +16,14 @@ from pugorugh.core.models import Profile, Dog, UserDog
 
 
 class UserRegisterView(CreateAPIView):
+    """Register User"""
     permission_classes = (permissions.AllowAny,)
     model = get_user_model()
     serializer_class = UserSerializer
 
 
-class ListProfileView(ListAPIView):
-    queryset = Profile.objects.all()
-    serializer_class = ProfileSerializer
-
-
 class RetrieveUpdateProfileView(RetrieveUpdateAPIView):
+    """Update Profile"""
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
 
@@ -38,28 +33,20 @@ class RetrieveUpdateProfileView(RetrieveUpdateAPIView):
         return user_pref
 
 
-class ListCreateDog(ListCreateAPIView):
-    queryset = Dog.objects.all()
-    serializer_class = DogSerializer
-
-
 class RetrieveUpdateDog(RetrieveUpdateDestroyAPIView):
+    """Update / Delete Dog"""
     queryset = Dog.objects.all()
     serializer_class = DogSerializer
 
 
-class RetrieveDogView(RetrieveAPIView):
+class ListCreateDog(ListCreateAPIView):
+    """Create Dog"""
     queryset = Dog.objects.all()
     serializer_class = DogSerializer
-
-    def get_object(self):
-        queryset = self.get_queryset()
-        dog = queryset.first()
-        return dog
 
 
 class NextDogView(RetrieveUpdateAPIView):
-    """Not Finished"""
+    """View for viewing dogs in all sections"""
     serializer_class = DogSerializer
 
     def detect_user(self):
@@ -165,6 +152,7 @@ class NextDogView(RetrieveUpdateAPIView):
 
 
 class UpdateUserDogView(RetrieveUpdateAPIView):
+    """Updating Dogs in all sections"""
     serializer_class = DogSerializer
 
     def get_queryset(self):
