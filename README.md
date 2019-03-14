@@ -1,5 +1,16 @@
 # Pug or Ugh
 
+## Installation
+
+1. python3 -m venv venv / or create your own Virtual Environment
+2. activate the venv
+3. pip install -r requirements.txt
+4. python manage.py migrate
+4. Go to > Pugorugh / Core / Scrips folder
+5. python data_import.py
+6. python manage.py runserver
+7. register user or use Baloo / Baloo
+
 ## Requirements
 
 Create the models, serializers, and views to power the provided React
