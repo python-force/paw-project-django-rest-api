@@ -1,4 +1,6 @@
-# Pug or Ugh
+# Pug or Ugh 
+## App for Dogs to find pup of their dreams
+## Django, Django REST API, React
 
 ## Installation
 
