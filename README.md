@@ -8,7 +8,7 @@
 2. activate the venv
 3. pip install -r requirements.txt
 4. python manage.py migrate
-4. Go to > Pugorugh / Core / Scrips folder
+4. Go to > Pugorugh > Core > Scripts folder
 5. python data_import.py
 
 **Important:**
