@@ -9,12 +9,11 @@
 4. Go to > Pugorugh / Core / Scrips folder
 5. python data_import.py
 
-Important: 
+**Important:**
 1. Make sure you clear all your cache
 2. Make sure you clear all your cookies for localhost / 127.0.0.1
-
-6. python manage.py runserver
-7. register user or use baloo / baloo
+3. python manage.py runserver
+4. register user or use baloo / baloo
 
 ## Requirements
 
