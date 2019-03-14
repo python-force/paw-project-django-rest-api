@@ -8,8 +8,13 @@
 4. python manage.py migrate
 4. Go to > Pugorugh / Core / Scrips folder
 5. python data_import.py
+
+Important: 
+1. Make sure you clear all your cache
+2. Make sure you clear all your cookies for localhost / 127.0.0.1
+
 6. python manage.py runserver
-7. register user or use Baloo / Baloo
+7. register user or use baloo / baloo
 
 ## Requirements
 
