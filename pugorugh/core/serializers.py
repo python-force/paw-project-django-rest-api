@@ -35,11 +35,9 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     """
     def create(self, validated_data):
-        
         Overriding the default create method of the Model serializer.
         :param validated_data: data containing all the details of profile
         :return: returns a successfully created profile record
-       
         user_data = validated_data['user']
         user = UserSerializer.create(UserSerializer(), validated_data=user_data)
         profile, created = Profile.objects.update_or_create(user=user,
@@ -48,8 +46,10 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     """
 
+
 class DogSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Dog
-        fields = ('id', 'name', 'image_filename', 'breed', 'age', 'gender', 'size', 'color')
+        fields = ('id', 'name', 'image_filename',
+                  'breed', 'age', 'gender', 'size', 'color')

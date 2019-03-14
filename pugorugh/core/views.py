@@ -11,10 +11,10 @@ from rest_framework.generics import (CreateAPIView,
                                      RetrieveUpdateDestroyAPIView,
                                      ListAPIView)
 
-from pugorugh.core.serializers import UserSerializer, ProfileSerializer, DogSerializer
+from pugorugh.core.serializers import (UserSerializer,
+                                       ProfileSerializer,
+                                       DogSerializer)
 from pugorugh.core.models import Profile, Dog, UserDog
-
-from pugorugh.core.serializers import DogSerializer
 
 
 class UserRegisterView(CreateAPIView):
@@ -56,7 +56,6 @@ class RetrieveDogView(RetrieveAPIView):
         queryset = self.get_queryset()
         dog = queryset.first()
         return dog
-
 
 
 class NextDogView(RetrieveUpdateAPIView):
@@ -103,7 +102,6 @@ class NextDogView(RetrieveUpdateAPIView):
 
         return queryset
 
-
     def age_selection(self):
         queryset = self.size_selection()
         ages = self.detect_user().age.split(',')
@@ -127,7 +125,6 @@ class NextDogView(RetrieveUpdateAPIView):
                     if 73 <= dog.age:
                         qs_list.append(queryset.filter(age=dog.age))
 
-
         final_queryset = UserDog.objects.none()
         for qs in qs_list:
             final_queryset |= qs
@@ -135,23 +132,26 @@ class NextDogView(RetrieveUpdateAPIView):
         return final_queryset
 
     def get_queryset(self):
-        queryset=self.age_selection()
+        queryset = self.age_selection()
 
         if self.kwargs.get('dog_filter') == 'liked':
             try:
-                queryset = queryset.filter(dogtag__status='liked').filter(dogtag__user_id=self.request.user.id)
+                queryset = queryset.filter(dogtag__status='liked').\
+                    filter(dogtag__user_id=self.request.user.id)
                 return queryset
             except:
                 raise Http404
         elif self.kwargs.get('dog_filter') == 'disliked':
             try:
-                queryset = queryset.filter(dogtag__status='disliked').filter(dogtag__user_id=self.request.user.id)
+                queryset = queryset.filter(dogtag__status='disliked').\
+                    filter(dogtag__user_id=self.request.user.id)
                 return queryset
             except:
                 raise Http404
         else:
             try:
-                queryset = queryset.exclude(dogtag__user_id=self.request.user.id)
+                queryset = queryset.exclude(dogtag__user_id=
+                                            self.request.user.id)
                 return queryset
             except:
                 raise Http404
@@ -172,7 +172,7 @@ class UpdateUserDogView(RetrieveUpdateAPIView):
 
     def get_object(self):
         status = self.kwargs.get('status')
-        if status == 'liked' or status =='disliked' or status == 'undecided':
+        if status == 'liked' or status == 'disliked' or status == 'undecided':
             dogs = Dog.objects.filter(id=self.kwargs.get('pk'))
             obj = dogs.first()
             if not obj:
@@ -199,7 +199,7 @@ class UpdateUserDogView(RetrieveUpdateAPIView):
                     qs.delete()
                 except:
                     raise Http404
-            elif status == 'liked' or status =='disliked':
+            elif status == 'liked' or status == 'disliked':
                 try:
                     qs = self.get_queryset().get(dog=dog)
                     qs.status = status

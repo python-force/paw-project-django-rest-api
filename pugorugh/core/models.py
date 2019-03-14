@@ -21,6 +21,16 @@ class Dog(models.Model):
         (MALE, 'm'),
         (FEMALE, 'f'),
     )
+    SMALL = 's'
+    MEDIUM = 'm'
+    LARGE = 'l'
+    XLARGE = 'xl'
+    SIZE_CHOICES = (
+        (SMALL, 's'),
+        (MEDIUM, 'm'),
+        (LARGE, 'l'),
+        (XLARGE, 'xl')
+    )
     LIGHT = 'l'
     DARK = 'd'
     COLOR_CHOICES = (
@@ -31,17 +41,25 @@ class Dog(models.Model):
     image_filename = models.CharField(max_length=500, blank=True)
     breed = models.CharField(max_length=50, blank=True)
     age = models.PositiveIntegerField(blank=True)
-    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True)
-    size = models.CharField(max_length=10, blank=True)
-    color = models.CharField(max_length=10, choices=COLOR_CHOICES, blank=True)
+    gender = models.CharField(max_length=10,
+                              choices=GENDER_CHOICES, blank=True)
+    size = models.CharField(max_length=10,
+                            choices=SIZE_CHOICES, blank=True)
+    color = models.CharField(max_length=10,
+                             choices=COLOR_CHOICES, blank=True)
 
     def __str__(self):
         return self.name
 
 
 class UserDog(models.Model):
-    user = models.ForeignKey(User, related_query_name="usertag", on_delete=models.CASCADE)
-    dog = models.ForeignKey(Dog, related_name="dogs", related_query_name="dogtag" ,on_delete=models.CASCADE)
+    user = models.ForeignKey(User,
+                             related_query_name="usertag",
+                             on_delete=models.CASCADE)
+    dog = models.ForeignKey(Dog,
+                            related_name="dogs",
+                            related_query_name="dogtag",
+                            on_delete=models.CASCADE)
     status = models.CharField(max_length=1, blank=True, null=True)
 
 

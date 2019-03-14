@@ -1,15 +1,10 @@
 from django.urls import reverse
-from django.test import TestCase
 from django.contrib.auth.models import User
-from django.utils import timezone
 
-from rest_framework.test import APIClient
-from rest_framework import permissions
-from requests.auth import HTTPBasicAuth
-from rest_framework.test import RequestsClient
 from rest_framework import status
 from rest_framework.test import APITestCase
-from pugorugh.core.models import Dog, UserDog, Profile
+from pugorugh.core.models import Dog, Profile
+
 
 class UserRegisterViewTests(APITestCase):
     """Testing Create User"""
@@ -19,7 +14,9 @@ class UserRegisterViewTests(APITestCase):
         Ensure we can create a new account object.
         """
         url = reverse('register-user')
-        data = {'username':'johnconnor', 'email':'dude@nasa.gov', 'password':'terminator'}
+        data = {'username': 'johnconnor',
+                'email': 'dude@nasa.gov',
+                'password': 'terminator'}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(User.objects.count(), 1)
@@ -44,7 +41,6 @@ class RetrieveUpdateProfileViewTests(APITestCase):
             size='s,m,l,xl'
         )
         self.client.login(username='johnconnor', password='terminator')
-        
 
     def test_update_profile(self):
         """
@@ -106,7 +102,7 @@ class NextDogViewTests(APITestCase):
             age=60,
             gender='m',
             size='m',
-            color = 'l'
+            color='l'
         )
         self.dog4 = Dog.objects.create(
             name='Athena',
@@ -131,7 +127,8 @@ class NextDogViewTests(APITestCase):
         self.assertEqual(dog4.id, 4)
 
     def test_next_dog_view_pass(self):
-        url = reverse('dog-filter-detail', kwargs={'pk': -1, 'dog_filter': 'undecided'})
+        url = reverse('dog-filter-detail',
+                      kwargs={'pk': -1, 'dog_filter': 'undecided'})
         data = {}
         response = self.client.get(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -139,7 +136,8 @@ class NextDogViewTests(APITestCase):
     def test_next_dog_view_baby(self):
         self.profile.age = 'b'
         self.profile.save()
-        url = reverse('dog-filter-detail', kwargs={'pk': -1, 'dog_filter': 'undecided'})
+        url = reverse('dog-filter-detail',
+                      kwargs={'pk': -1, 'dog_filter': 'undecided'})
         data = {}
         response = self.client.get(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -155,7 +153,8 @@ class NextDogViewTests(APITestCase):
     def test_next_dog_view_young(self):
         self.profile.age = 'y'
         self.profile.save()
-        url = reverse('dog-filter-detail', kwargs={'pk': -1, 'dog_filter': 'undecided'})
+        url = reverse('dog-filter-detail',
+                      kwargs={'pk': -1, 'dog_filter': 'undecided'})
         data = {}
         response = self.client.get(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -171,7 +170,8 @@ class NextDogViewTests(APITestCase):
     def test_next_dog_view_adult(self):
         self.profile.age = 'a'
         self.profile.save()
-        url = reverse('dog-filter-detail', kwargs={'pk': -1, 'dog_filter': 'undecided'})
+        url = reverse('dog-filter-detail',
+                      kwargs={'pk': -1, 'dog_filter': 'undecided'})
         data = {}
         response = self.client.get(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -187,7 +187,8 @@ class NextDogViewTests(APITestCase):
     def test_next_dog_view_senior(self):
         self.profile.age = 's'
         self.profile.save()
-        url = reverse('dog-filter-detail', kwargs={'pk': -1, 'dog_filter': 'undecided'})
+        url = reverse('dog-filter-detail',
+                      kwargs={'pk': -1, 'dog_filter': 'undecided'})
         data = {}
         response = self.client.get(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -203,7 +204,8 @@ class NextDogViewTests(APITestCase):
     def test_next_dog_view_gender_only_one(self):
         self.profile.gender = 'f'
         self.profile.save()
-        url = reverse('dog-filter-detail', kwargs={'pk': self.dog.id, 'dog_filter': 'undecided'})
+        url = reverse('dog-filter-detail',
+                      kwargs={'pk': self.dog.id, 'dog_filter': 'undecided'})
         data = {}
         response = self.client.get(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -216,10 +218,11 @@ class NextDogViewTests(APITestCase):
                                          'size': 'l',
                                          'color': 'l'})
 
-    def test_next_dog_view_gender_404_not_found(self): # raise Http404 - test is working but not removing in HTML
+    def test_next_dog_view_gender_404_not_found(self):
         self.profile.gender = ''
         self.profile.save()
-        url = reverse('dog-filter-detail', kwargs={'pk': -1, 'dog_filter': 'undecided'})
+        url = reverse('dog-filter-detail',
+                      kwargs={'pk': -1, 'dog_filter': 'undecided'})
         data = {}
         response = self.client.get(url, data, format='json')
         # print(response.status_code)
@@ -292,9 +295,11 @@ class UpdateUserDogViewTests(APITestCase):
 
     # Test to make sure the Dog is being liked in UserDog Table
     def test_update_userdog_view_dog_exists_liked(self):
-        dog = Dog.objects.filter(dogtag__status='liked').filter(dogtag__user_id=self.user.id).first()
+        dog = Dog.objects.filter(dogtag__status='liked').\
+            filter(dogtag__user_id=self.user.id).first()
         self.assertEqual(dog.name, 'Sky')
-        self.assertEqual(Dog.objects.filter(dogtag__status='liked').filter(dogtag__user_id=self.user.id).exists(), True)
+        self.assertEqual(Dog.objects.filter(dogtag__status='liked').
+                         filter(dogtag__user_id=self.user.id).exists(), True)
 
     def test_animals_exists(self):
         """Animals Exists"""
@@ -308,7 +313,8 @@ class UpdateUserDogViewTests(APITestCase):
         self.assertEqual(dog4.id, 4)
 
     def test_update_userdog_view_pass(self):
-        url = reverse('dog-list', kwargs={'pk': 1, 'status': 'liked'})
+        url = reverse('dog-list',
+                      kwargs={'pk': 1, 'status': 'liked'})
         data = {}
         response = self.client.get(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -328,51 +334,64 @@ class UpdateUserDogViewTests(APITestCase):
         self.assertEqual(self.dog.age, 15)
 
     def test_next_dog_view_userdog_query_liked(self):
-        url = reverse('dog-filter-detail', kwargs={'pk': -1, 'dog_filter': 'liked'})
+        url = reverse('dog-filter-detail',
+                      kwargs={'pk': -1, 'dog_filter': 'liked'})
         data = {}
         response = self.client.get(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        dog = Dog.objects.filter(dogtag__status='liked').filter(dogtag__user_id=self.user.id).first()
+        dog = Dog.objects.filter(dogtag__status='liked').\
+            filter(dogtag__user_id=self.user.id).first()
         self.assertEqual(dog.name, 'Sky')
 
     def test_next_dog_view_userdog_query_not_exist_liked(self):
-        url = reverse('dog-filter-detail', kwargs={'pk': 1, 'dog_filter': 'liked'})
+        url = reverse('dog-filter-detail',
+                      kwargs={'pk': 1, 'dog_filter': 'liked'})
         data = {}
         response = self.client.get(url, data, format='json')
         self.assertEqual(response.status_code, 404)
 
     def test_next_dog_view_userdog_query_disliked(self):
-        url = reverse('dog-filter-detail', kwargs={'pk': 3, 'dog_filter': 'disliked'})
+        url = reverse('dog-filter-detail',
+                      kwargs={'pk': 3, 'dog_filter': 'disliked'})
         data = {}
         response = self.client.get(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        dog = Dog.objects.filter(dogtag__status='disliked').filter(dogtag__user_id=self.user.id).first()
+        dog = Dog.objects.filter(dogtag__status='disliked').\
+            filter(dogtag__user_id=self.user.id).first()
         self.assertEqual(dog.name, 'Athena')
 
     def test_update_userdog_view_disliked(self):
-        url = reverse('dog-list', kwargs={'pk': 1, 'status': 'undecided'})
+        url = reverse('dog-list',
+                      kwargs={'pk': 1, 'status': 'undecided'})
         data = {}
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertFalse(Dog.objects.filter(dogtag__status='liked').filter(dogtag__user_id=self.user.id).exists())
+        self.assertFalse(Dog.objects.filter(dogtag__status='liked').
+                         filter(dogtag__user_id=self.user.id).exists())
 
     def test_update_userdog_view_changing_liked_to_disliked(self):
-        url = reverse('dog-list', kwargs={'pk': 1, 'status': 'disliked'})
+        url = reverse('dog-list',
+                      kwargs={'pk': 1, 'status': 'disliked'})
         data = {}
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        dog = Dog.objects.filter(dogtag__status='disliked').filter(dogtag__user_id=self.user.id).first()
+        dog = Dog.objects.filter(dogtag__status='disliked').\
+            filter(dogtag__user_id=self.user.id).first()
         self.assertEqual(dog.name, 'Sky')
-        self.assertTrue(Dog.objects.filter(dogtag__status='disliked').filter(dogtag__user_id=self.user.id).exists())
+        self.assertTrue(Dog.objects.filter(dogtag__status='disliked').
+                        filter(dogtag__user_id=self.user.id).exists())
 
     def test_update_userdog_view_adding_dislike_to_already_liked_dogs(self):
-        url = reverse('dog-list', kwargs={'pk': 2, 'status': 'disliked'})
+        url = reverse('dog-list',
+                      kwargs={'pk': 2, 'status': 'disliked'})
         data = {}
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        dog = Dog.objects.filter(dogtag__status='disliked').filter(dogtag__user_id=self.user.id).first()
+        dog = Dog.objects.filter(dogtag__status='disliked').\
+            filter(dogtag__user_id=self.user.id).first()
         self.assertEqual(dog.name, 'Muffin')
-        self.assertTrue(Dog.objects.filter(dogtag__status='disliked').filter(dogtag__user_id=self.user.id).exists())
+        self.assertTrue(Dog.objects.filter(dogtag__status='disliked').
+                        filter(dogtag__user_id=self.user.id).exists())
 
     def test_update_userdog_view_bad_status(self):
         data = {'pk': 1, 'status': 'notanoption'}
@@ -382,7 +401,6 @@ class UpdateUserDogViewTests(APITestCase):
 
         # Does not exist because of wrong status
         self.assertEqual(response.status_code, 404)
-
 
     """
     def test_update_userdog_view_adding_dislike_to_already_liked_dogs(self):
@@ -397,9 +415,5 @@ class UpdateUserDogViewTests(APITestCase):
         # with the same dog PK.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(pk, data.get('pk'))
-        
+
     """
-
-
-
-
